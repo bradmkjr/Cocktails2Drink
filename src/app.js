@@ -187,7 +187,7 @@ app.get('/shaker', function(req, res) {
 		  }else{
 			  
 			  var mediaIdStr = data.media_id_string
-			  var meta_params = { media_id: mediaIdStr, alt_text: { text: title + ' ' + description } }
+			  var meta_params = { media_id: mediaIdStr, alt_text: { text: trimWords(title + ' ' + description, 420) } }
 			 
 			  T.post('media/metadata/create', meta_params, function (error, data, response) {
 			    if(error != undefined || response.statusCode != 200 ){
