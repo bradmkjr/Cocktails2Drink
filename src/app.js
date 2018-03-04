@@ -27,7 +27,23 @@ var b64content = '';
 
 var response = '';
 
-var tags = ['#DontDrinkAndDrive','#Cocktails','#DrinkRecipes','#DrinkResponsibly', '#HappyHour', '#ShopLocal','#Spirits', '#Liquor', '#Cheers', '#Shaker','#DrinkTime'];
+var search = '';
+var list_id = '';
+
+var tags = [	'#DontDrinkAndDrive',
+				'#Cocktails',
+				'#DrinkRecipes',
+				'#DrinkResponsibly',
+				'#HappyHour',
+				'#ShopLocal',
+				'#Spirits',
+				'#Liquor',
+				'#Cheers',
+				'#Shaker',
+				'#DrinkTime',
+				'#mixology',
+				'#bartender'
+				];
 
 var ingredients = [];
 
@@ -277,6 +293,480 @@ app.get('/shaker', function(req, res) {
 
 
 }); // end shaker
+
+
+
+app.get('/strainer', function(req, res) {
+
+	var T = new Twit( {
+      consumer_key: process.env.twitter_consumer_key,
+      consumer_secret: process.env.twitter_consumer_secret,
+      access_token: process.env.twitter_access_token,
+      access_token_secret: process.env.twitter_access_token_secret
+    } );
+
+	res.writeHead(200, {'Content-Type': 'text/html'}); 
+	console.log('Starting Strainer...');
+
+	search = 'bartending shift';
+
+	list_id = '970175266612916224';
+
+	searchTwitter();
+
+	function searchTwitter(){
+	
+		console.log('Twitter Search: '+ search);
+	
+		//
+		//  search twitter for all tweets containing the word '#coupon'
+		//
+		T.get('search/tweets', { q: search, count: 100, result_type: 'mixed' }, function(error, data, response) {
+		  // console.log(data);
+		  // console.log(error);
+		  // console.log(response);
+	
+		  if( data != undefined && !error && response.statusCode == 200 && data.statuses.length != 0 ){
+		  	// res.write(JSON.stringify(data));	
+		  	
+		  	var status = data.statuses[getRandomRange(0,data.statuses.length)];
+	
+		  	console.log(status.text);
+		  	res.write( 'Tweet: ' + status.text );	
+	
+		  	// res.write( status.user.id_str );	
+		  	res.write( 'User: ' + status.user.name );	
+		  	// console.log( status.user.screen_name );	
+		  	res.write( 'Screen Name: ' + status.user.screen_name );	
+		  	
+		  	T.post('friendships/create', { user_id: status.user.id_str }, function(error, data, response) {
+	
+		  		// console.log(data);
+		  		// console.log(response);
+	
+		  		if( data != undefined && !error && response.statusCode == 200 ){
+	
+		  			// console.log(response);
+		  			console.log('Following Status: ' + data.following);
+		  			res.write( 'Following Status: ' + data.following );	
+
+		  			console.log('List ID: '+ list_id);
+	
+					T.post('lists/members/create', { list_id: list_id, user_id: status.user.id_str, screen_name: status.user.screen_name }, function(error, data, response) {
+	
+				  		// console.log(data);
+				  		// console.log(response);
+	
+				  		if( data != undefined && !error && response.statusCode == 200 ){
+	
+				  			// console.log(response);
+				  			console.log( data.member_count );
+				  			res.write( 'Member Count: '+data.member_count );	
+				  			// console.log(data);
+				  		}
+				  		else if( error )
+				  		{
+							console.log(error);	  			
+				  		}
+	
+				  		res.end();	
+				  	});
+	
+		  		}
+		  		else if( error )
+		  		{
+					console.log(error);	  			
+		  		}
+	
+		  		// res.end();	
+	
+		  	});
+		  	
+		  } // end if
+		  else if( error )
+		  {
+			console.log(error);	
+			console.log(data);
+			console.log(response.statusCode);
+		  }
+		  
+	
+		}); // end search/tweets
+		
+		
+	} // end function searchTwitter
+
+	// createList()
+
+	function createList(){
+		
+		var listSlug = 'ProfessionalBartenders';
+		var listDescription = 'Professionals preparing alcoholic or non-alcoholic beverages for bar and patrons';
+
+		//
+		//  Creates a new list for the authenticated user. Note that you can create up to 1000 lists per account.
+		//
+		T.post('lists/create', { name: listSlug, description: listDescription  }, function(error, data, response) {
+		  // console.log(data);
+		  // console.log(data.statuses.length);
+		  // console.log(response);
+	
+		  if( data != undefined && !error && response.statusCode == 200 ){
+		  	// res.write(JSON.stringify(data));	
+		  		
+			  console.log(data);
+			  
+			//  searchTwitter(item)		
+		  	
+		  } // end if
+		  else if( error )
+		  {
+			console.log(error);	
+			console.log(data);
+			console.log(response.statusCode);
+		  }
+	
+		}); // end lists/create
+		
+	} // createList
+
+}); // end strainer
+
+
+app.get('/icebucket', function(req, res) {
+
+	var T = new Twit( {
+      consumer_key: process.env.twitter_consumer_key,
+      consumer_secret: process.env.twitter_consumer_secret,
+      access_token: process.env.twitter_access_token,
+      access_token_secret: process.env.twitter_access_token_secret
+    } );
+
+	res.writeHead(200, {'Content-Type': 'text/html'}); 
+	console.log('Starting Strainer...');
+
+	search = 'professional bartender';
+
+	list_id = '970175266612916224';
+
+	searchTwitter();
+
+	function searchTwitter(){
+	
+		console.log('Twitter Search: '+ search);
+	
+		//
+		//  search twitter for all tweets containing the word '#coupon'
+		//
+		T.get('search/tweets', { q: search, count: 100, result_type: 'mixed' }, function(error, data, response) {
+		  // console.log(data);
+		  // console.log(error);
+		  // console.log(response);
+	
+		  if( data != undefined && !error && response.statusCode == 200 && data.statuses.length != 0 ){
+		  	// res.write(JSON.stringify(data));	
+		  	
+		  	var status = data.statuses[getRandomRange(0,data.statuses.length)];
+	
+		  	console.log(status.text);
+		  	res.write( 'Tweet: ' + status.text );	
+	
+		  	// res.write( status.user.id_str );	
+		  	res.write( 'User: ' + status.user.name );	
+		  	// console.log( status.user.screen_name );	
+		  	res.write( 'Screen Name: ' + status.user.screen_name );	
+		  	
+		  	T.post('friendships/create', { user_id: status.user.id_str }, function(error, data, response) {
+	
+		  		// console.log(data);
+		  		// console.log(response);
+	
+		  		if( data != undefined && !error && response.statusCode == 200 ){
+	
+		  			// console.log(response);
+		  			console.log('Following Status: ' + data.following);
+		  			res.write( 'Following Status: ' + data.following );	
+
+		  			console.log('List ID: '+ list_id);
+	
+					T.post('lists/members/create', { list_id: list_id, user_id: status.user.id_str, screen_name: status.user.screen_name }, function(error, data, response) {
+	
+				  		// console.log(data);
+				  		// console.log(response);
+	
+				  		if( data != undefined && !error && response.statusCode == 200 ){
+	
+				  			// console.log(response);
+				  			console.log( data.member_count );
+				  			res.write( 'Member Count: '+data.member_count );	
+				  			// console.log(data);
+				  		}
+				  		else if( error )
+				  		{
+							console.log(error);	  			
+				  		}
+	
+				  		res.end();	
+				  	});
+	
+		  		}
+		  		else if( error )
+		  		{
+					console.log(error);	  			
+		  		}
+	
+		  		// res.end();	
+	
+		  	});
+		  	
+		  } // end if
+		  else if( error )
+		  {
+			console.log(error);	
+			console.log(data);
+			console.log(response.statusCode);
+		  }
+		  
+	
+		}); // end search/tweets
+		
+		
+	} // end function searchTwitter
+
+	// createList()
+
+	function createList(){
+		
+		var listSlug = 'ProfessionalBartenders';
+		var listDescription = 'Professionals preparing alcoholic or non-alcoholic beverages for bar and patrons';
+
+		//
+		//  Creates a new list for the authenticated user. Note that you can create up to 1000 lists per account.
+		//
+		T.post('lists/create', { name: listSlug, description: listDescription  }, function(error, data, response) {
+		  // console.log(data);
+		  // console.log(data.statuses.length);
+		  // console.log(response);
+	
+		  if( data != undefined && !error && response.statusCode == 200 ){
+		  	// res.write(JSON.stringify(data));	
+		  		
+			  console.log(data);
+			  
+			//  searchTwitter(item)		
+		  	
+		  } // end if
+		  else if( error )
+		  {
+			console.log(error);	
+			console.log(data);
+			console.log(response.statusCode);
+		  }
+	
+		}); // end lists/create
+		
+	} // createList
+
+}); // end icebucket
+
+
+app.get('/garnish', function(req, res) {
+
+	var T = new Twit( {
+      consumer_key: process.env.twitter_consumer_key,
+      consumer_secret: process.env.twitter_consumer_secret,
+      access_token: process.env.twitter_access_token,
+      access_token_secret: process.env.twitter_access_token_secret
+    } );
+
+	res.writeHead(200, {'Content-Type': 'text/html'}); 
+	console.log('Starting Strainer...');
+
+	search = 'bartending pro';
+
+	list_id = '970175266612916224';
+
+	searchTwitter();
+
+	function searchTwitter(){
+	
+		console.log('Twitter Search: '+ search);
+	
+		//
+		//  search twitter for all tweets containing the word '#coupon'
+		//
+		T.get('search/tweets', { q: search, count: 100, result_type: 'mixed' }, function(error, data, response) {
+		  // console.log(data);
+		  // console.log(error);
+		  // console.log(response);
+	
+		  if( data != undefined && !error && response.statusCode == 200 && data.statuses.length != 0 ){
+		  	// res.write(JSON.stringify(data));	
+		  	
+		  	var status = data.statuses[getRandomRange(0,data.statuses.length)];
+	
+		  	console.log(status.text);
+		  	res.write( 'Tweet: ' + status.text );	
+	
+		  	// res.write( status.user.id_str );	
+		  	res.write( 'User: ' + status.user.name );	
+		  	// console.log( status.user.screen_name );	
+		  	res.write( 'Screen Name: ' + status.user.screen_name );	
+		  	
+		  	T.post('friendships/create', { user_id: status.user.id_str }, function(error, data, response) {
+	
+		  		// console.log(data);
+		  		// console.log(response);
+	
+		  		if( data != undefined && !error && response.statusCode == 200 ){
+	
+		  			// console.log(response);
+		  			console.log('Following Status: ' + data.following);
+		  			res.write( 'Following Status: ' + data.following );	
+
+		  			console.log('List ID: '+ list_id);
+	
+					T.post('lists/members/create', { list_id: list_id, user_id: status.user.id_str, screen_name: status.user.screen_name }, function(error, data, response) {
+	
+				  		// console.log(data);
+				  		// console.log(response);
+	
+				  		if( data != undefined && !error && response.statusCode == 200 ){
+	
+				  			// console.log(response);
+				  			console.log( data.member_count );
+				  			res.write( 'Member Count: '+data.member_count );	
+				  			// console.log(data);
+				  		}
+				  		else if( error )
+				  		{
+							console.log(error);	  			
+				  		}
+	
+				  		res.end();	
+				  	});
+	
+		  		}
+		  		else if( error )
+		  		{
+					console.log(error);	  			
+		  		}
+	
+		  		// res.end();	
+	
+		  	});
+		  	
+		  } // end if
+		  else if( error )
+		  {
+			console.log(error);	
+			console.log(data);
+			console.log(response.statusCode);
+		  }
+		}); // end search/tweets		
+	} // end function searchTwitter
+
+}); // end garnish
+
+
+
+app.get('/glassware', function(req, res) {
+
+	var T = new Twit( {
+      consumer_key: process.env.twitter_consumer_key,
+      consumer_secret: process.env.twitter_consumer_secret,
+      access_token: process.env.twitter_access_token,
+      access_token_secret: process.env.twitter_access_token_secret
+    } );
+
+	res.writeHead(200, {'Content-Type': 'text/html'}); 
+	console.log('Starting Strainer...');
+
+	search = 'mixology';
+
+	list_id = '970175266612916224';
+
+	searchTwitter();
+
+	function searchTwitter(){
+	
+		console.log('Twitter Search: '+ search);
+	
+		//
+		//  search twitter for all tweets containing the word '#coupon'
+		//
+		T.get('search/tweets', { q: search, count: 100, result_type: 'mixed' }, function(error, data, response) {
+		  // console.log(data);
+		  // console.log(error);
+		  // console.log(response);
+	
+		  if( data != undefined && !error && response.statusCode == 200 && data.statuses.length != 0 ){
+		  	// res.write(JSON.stringify(data));	
+		  	
+		  	var status = data.statuses[getRandomRange(0,data.statuses.length)];
+	
+		  	console.log(status.text);
+		  	res.write( 'Tweet: ' + status.text );	
+	
+		  	// res.write( status.user.id_str );	
+		  	res.write( 'User: ' + status.user.name );	
+		  	// console.log( status.user.screen_name );	
+		  	res.write( 'Screen Name: ' + status.user.screen_name );	
+		  	
+		  	T.post('friendships/create', { user_id: status.user.id_str }, function(error, data, response) {
+	
+		  		// console.log(data);
+		  		// console.log(response);
+	
+		  		if( data != undefined && !error && response.statusCode == 200 ){
+	
+		  			// console.log(response);
+		  			console.log('Following Status: ' + data.following);
+		  			res.write( 'Following Status: ' + data.following );	
+
+		  			console.log('List ID: '+ list_id);
+	
+					T.post('lists/members/create', { list_id: list_id, user_id: status.user.id_str, screen_name: status.user.screen_name }, function(error, data, response) {
+	
+				  		// console.log(data);
+				  		// console.log(response);
+	
+				  		if( data != undefined && !error && response.statusCode == 200 ){
+	
+				  			// console.log(response);
+				  			console.log( data.member_count );
+				  			res.write( 'Member Count: '+data.member_count );	
+				  			// console.log(data);
+				  		}
+				  		else if( error )
+				  		{
+							console.log(error);	  			
+				  		}
+	
+				  		res.end();	
+				  	});
+	
+		  		}
+		  		else if( error )
+		  		{
+					console.log(error);	  			
+		  		}
+	
+		  		// res.end();	
+	
+		  	});
+		  	
+		  } // end if
+		  else if( error )
+		  {
+			console.log(error);	
+			console.log(data);
+			console.log(response.statusCode);
+		  }
+		}); // end search/tweets		
+	} // end function searchTwitter
+
+}); // end glassware
 
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
