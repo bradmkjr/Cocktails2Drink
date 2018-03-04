@@ -58,7 +58,7 @@ app.get('/shaker', function(req, res) {
 
 	res.writeHead(200, {'Content-Type': 'text/html'}); 
 	console.log('Starting Shaker...');
-	res.write('Starting Shaker...');
+	// res.write('Starting Shaker...');
 	loadRecipe();
 
 	function loadRecipe(){
@@ -106,7 +106,7 @@ app.get('/shaker', function(req, res) {
 
 			shortURL = response.data.url;
 			console.log('Short URL: '+shortURL);
-			res.write('Short URL: '+shortURL);
+			// res.write('Short URL: '+shortURL);
 			
 			tweet = statusUpdate( data.drinks[0].strDrink, data.drinks[0].strInstructions, shortURL );
 		
