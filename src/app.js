@@ -105,6 +105,7 @@ app.get('/shaker', function(req, res) {
 
 	    thumbnailURL = data.drinks[0].strDrinkThumb
 
+	    ingredients = [];
 	    for(i=1;i<15;i++){
 	    	if( undefined != data.drinks[0]['strIngredient'+i] && '' != data.drinks[0]['strIngredient'+i].trim() )
 	    		ingredients.push(data.drinks[0]['strIngredient'+i])
